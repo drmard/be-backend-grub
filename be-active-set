@@ -1,0 +1,24 @@
+#!/bin/sh -e
+
+active=$1
+if [ -e /etc/default/be-grubenv ]; then
+    . /etc/default/be-grubenv
+fi
+# If it requires a mount path, check it first
+if [ -n "$mount_path" ]; then 
+    mount | grep -q "$mount_path" || exit 1
+fi
+if [ ! -e "$grubenv" ]; then
+    grub-editenv "$grubenv" create
+fi
+
+case "$active" in
+    0|1)
+        grub-editenv "$grubenv" set be_active=$active
+        exit $?
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+

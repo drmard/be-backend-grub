@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ -e /etc/default/be-grubenv ]; then
+    . /etc/default/be-grubenv
+fi
+# If it requires a mount path, check it first
+if [ -n "$mount_path" ]; then 
+    mount | grep -q "$mount_path" || exit 1
+fi
+active=`grub-editenv $grubenv list | grep "be_active="`
+if [ -z "$active" ]; then
+    active="be_active=0"
+fi
+echo "$active" | awk -F= '/be_active=/ { print $2 }'
+
+exit 0
+
